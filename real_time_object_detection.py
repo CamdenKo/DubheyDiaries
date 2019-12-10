@@ -11,7 +11,7 @@ import time
 import cv2
 
 WHAT_TO_DETECT = 'person'
-VIDEO_ON = False
+VIDEO_ON = True
 
 # construct the argument parse and parse the arguments
 ap = argparse.ArgumentParser()
@@ -105,19 +105,24 @@ if VIDEO_ON:
 	print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 
 	# do a bit of cleanup
-	cv2.destroyAllWindows()
-	vs.stop()
 
 else:
 	print('running in off mode')
 	vs = VideoStream(src=0).start()
 	time.sleep(2.0)
-	frame = vs.read()
-	blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)),
-			0.007843, (300, 300), 127.5)
-	net.setInput(blob)
-	detections = net.forward()
 	while True:
+		frame = vs.read()
+		frame = imutils.resize(frame, width=400)
+
+		# grab the frame dimensions and convert it to a blob
+		(h, w) = frame.shape[:2]
+		blob = cv2.dnn.blobFromImage(cv2.resize(frame, (300, 300)),
+			0.007843, (300, 300), 127.5)
+
+		# pass the blob through the network and obtain the detections and
+		# predictions
+		net.setInput(blob)
+		detections = net.forward()
 		# loop over the detections
 		for i in np.arange(0, detections.shape[2]):
 			# extract the confidence (i.e., probability) associated with
@@ -135,3 +140,6 @@ else:
 					confidence * 100)
 				if CLASSES[idx] == WHAT_TO_DETECT:
 					print(label)
+
+cv2.destroyAllWindows()
+vs.stop()
