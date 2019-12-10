@@ -5,7 +5,7 @@
 Put this into the command line to see the version that is functional, meaning that the function can be run and when it is run it'll grab a single frame and if the target object is found (in this case a person) it'll return a string. This can be modified to return whatever you need.
 
 ```Command Line
-python functiona.py
+python functional.py
 ```
 
 
